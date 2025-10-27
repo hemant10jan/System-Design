@@ -1,0 +1,148 @@
+import java.util.*;
+
+// Product class
+class Product {
+    int productId;
+    String productName;
+    double price;
+    int stockQuantity;
+
+    public Product(int productId, String productName, double price, int stockQuantity) {
+        this.productId = productId;
+        this.productName = productName;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+    }
+
+    public void updateStock(int quantity) {
+        this.stockQuantity -= quantity;
+        System.out.println("Stock updated. Remaining: " + this.stockQuantity);
+    }
+}
+
+// Cart class
+class Cart {
+    List<Product> products = new ArrayList<>();
+    Map<Product, Integer> quantities = new HashMap<>();
+
+    public void addProduct(Product product, int quantity) {
+        if(product.stockQuantity >= quantity) {
+            products.add(product);
+            quantities.put(product, quantities.getOrDefault(product, 0) + quantity);
+            System.out.println(quantity + " " + product.productName + "(s) added to cart.");
+        } else {
+            System.out.println("Not enough stock for " + product.productName);
+        }
+    }
+
+    public void removeProduct(Product product) {
+        products.remove(product);
+        quantities.remove(product);
+        System.out.println(product.productName + " removed from cart.");
+    }
+
+    public double getTotal() {
+        double total = 0;
+        for(Product p : products) {
+            total += p.price * quantities.get(p);
+        }
+        return total;
+    }
+}
+
+// Payment class
+class Payment {
+    int paymentId;
+    double amount;
+    String paymentMethod;
+    Date paymentDate;
+
+    public Payment(String paymentMethod) {
+        this.paymentId = new Random().nextInt(1000);
+        this.paymentMethod = paymentMethod;
+        this.paymentDate = new Date();
+    }
+
+    public void processPayment(double amount) {
+        this.amount = amount;
+        System.out.println("Payment of " + amount + " via " + paymentMethod + " processed.");
+    }
+}
+
+// Order class
+class Order {
+    int orderId;
+    Customer customer;
+    Map<Product, Integer> products = new HashMap<>();
+    double totalAmount;
+    Payment payment;
+    Date orderDate;
+
+    public Order(Customer customer) {
+        this.orderId = new Random().nextInt(1000);
+        this.customer = customer;
+        this.orderDate = new Date();
+    }
+
+    public void addProductsFromCart(Cart cart) {
+        this.products.putAll(cart.quantities);
+        this.totalAmount = cart.getTotal();
+        System.out.println("Order created with total: " + totalAmount);
+    }
+
+    public void makePayment(String paymentMethod) {
+        this.payment = new Payment(paymentMethod);
+        this.payment.processPayment(this.totalAmount);
+    }
+}
+
+// Customer class
+class Customer {
+    int customerId;
+    String name;
+    String email;
+    String address;
+    Cart cart;
+    List<Order> orders;
+
+    public Customer(int customerId, String name, String email, String address) {
+        this.customerId = customerId;
+        this.name = name;
+        this.email = email;
+        this.address = address;
+        this.cart = new Cart();
+        this.orders = new ArrayList<>();
+    }
+
+    public void addToCart(Product product, int quantity) {
+        cart.addProduct(product, quantity);
+    }
+
+    public void placeOrder(String paymentMethod) {
+        Order order = new Order(this);
+        order.addProductsFromCart(cart);
+        order.makePayment(paymentMethod);
+        orders.add(order);
+        cart = new Cart(); // Empty cart after order
+        System.out.println("Order placed successfully!");
+    }
+}
+
+// Main class
+public class OnlineShoppingSystem {
+    public static void main(String[] args) {
+        // Create products
+        Product p1 = new Product(1, "Laptop", 50000, 10);
+        Product p2 = new Product(2, "Mouse", 500, 50);
+
+        // Create customer
+        Customer c1 = new Customer(101, "Alice", "alice@example.com", "123 Street");
+
+        // Add products to cart
+        c1.addToCart(p1, 1);
+        c1.addToCart(p2, 2);
+
+        // Place order
+        c1.placeOrder("Credit Card");
+    }
+}
