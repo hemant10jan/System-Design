@@ -139,11 +139,11 @@ class ParkingFloor{
         }
 
         for(int i=0;i<medium;i++){
-            ParkingSpot ps=new ParkingSpot(idCounter++,SpotType.small);
+            ParkingSpot ps=new ParkingSpot(idCounter++,SpotType.medium);
             spots.add(ps);
         }
         for(int i=0;i<large;i++){
-            ParkingSpot ps=new ParkingSpot(idCounter++,SpotType.small);
+            ParkingSpot ps=new ParkingSpot(idCounter++,SpotType.large);
             spots.add(ps);
         }
     }
